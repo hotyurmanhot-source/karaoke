@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#08080b">
+<title>NOIR // KARAOKE</title>
+<style>
+:root{--bg:#08080b;--panel:#111116;--panel2:#17171e;--line:#292932;--muted:#92929e;--white:#f5f5f7;--accent:#c7ff3d;--pink:#ff4fa3}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 75% 0%,#25202e 0%,transparent 35%),var(--bg);color:var(--white);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
+header{display:flex;align-items:center;justify-content:space-between;padding:22px clamp(18px,5vw,70px);border-bottom:1px solid var(--line);position:sticky;top:0;background:#08080beF;backdrop-filter:blur(18px);z-index:5}
+.logo{font-weight:950;letter-spacing:.16em;font-size:15px}.logo span{color:var(--accent)}.live{font-size:10px;letter-spacing:.18em;color:var(--accent);border:1px solid #52651d;padding:7px 10px;border-radius:30px}
+main{max-width:1180px;margin:auto;padding:48px clamp(18px,5vw,70px) 80px}
+.hero{display:grid;grid-template-columns:1.2fr .8fr;gap:28px;align-items:end;margin-bottom:34px}
+.eyebrow{color:var(--accent);font-size:11px;letter-spacing:.25em;font-weight:800}.hero h1{font-size:clamp(42px,8vw,88px);line-height:.91;letter-spacing:-.075em;margin:15px 0}.hero h1 em{font-style:normal;color:var(--accent)}.hero p{color:var(--muted);max-width:520px;line-height:1.65}
+.mic-card{background:linear-gradient(140deg,#24242d,#111116);border:1px solid #34343d;border-radius:22px;padding:22px;min-height:190px;display:flex;flex-direction:column;justify-content:space-between}
+.mic-top{display:flex;justify-content:space-between;color:var(--muted);font-size:11px;letter-spacing:.12em}.mic-icon{font-size:32px;color:var(--accent)}.meter{height:8px;background:#303039;border-radius:9px;overflow:hidden;margin:16px 0}.meter i{display:block;width:0;height:100%;background:linear-gradient(90deg,var(--pink),var(--accent));transition:width .1s}.mic-card small{color:var(--muted)}
+.toolbar{display:flex;gap:12px;margin:28px 0 18px;flex-wrap:wrap}.search{flex:1;min-width:220px;background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:15px 17px;color:white;font-size:14px;outline:none}.search:focus{border-color:var(--accent)}
+button,.chip{border:1px solid var(--line);background:var(--panel2);color:var(--white);padding:12px 15px;border-radius:12px;cursor:pointer;font-weight:750;font-size:12px;transition:.2s}button:hover,.chip:hover{border-color:var(--accent);transform:translateY(-1px)}button.primary{background:var(--accent);color:#10110b;border-color:var(--accent)}button:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:25px}.chip.active{background:var(--accent);color:#10110b;border-color:var(--accent)}
+.section-head{display:flex;align-items:center;justify-content:space-between;margin:28px 0 14px}.section-head h2{font-size:14px;letter-spacing:.16em;text-transform:uppercase}.section-head span{font-size:11px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.song{display:flex;align-items:center;gap:14px;background:var(--panel);border:1px solid var(--line);padding:14px;border-radius:15px;min-width:0}.num{font-size:12px;color:#777784;width:22px}.cover{width:44px;height:44px;flex:none;border-radius:11px;background:linear-gradient(135deg,#30303a,#17171e);display:grid;place-items:center;color:var(--accent);font-weight:900;font-size:17px}.meta{min-width:0;flex:1}.meta b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.meta small{display:block;color:var(--muted);font-size:11px;margin-top:5px}.song button{padding:10px 12px;white-space:nowrap}
+.empty{color:var(--muted);padding:30px;text-align:center;border:1px dashed var(--line);border-radius:14px;grid-column:1/-1}
+.note{color:var(--muted);font-size:11px;line-height:1.6;margin-top:30px;border-top:1px solid var(--line);padding-top:18px}.note a{color:var(--accent)}
+footer{color:#666672;text-align:center;padding:25px;font-size:10px;letter-spacing:.12em}
+@media(max-width:700px){.hero{grid-template-columns:1fr}.mic-card{min-height:150px}.grid{grid-template-columns:1fr}main{padding-top:35px}.song{padding:11px}.song button{font-size:10px}}
+</style>
+</head>
+<body>
+<header><div class="logo">NOIR <span>//</span> KARAOKE</div><div class="live">● SING MODE</div></header>
+<main>
+<section class="hero">
+ <div><div class="eyebrow">YOUR ROOM. YOUR STAGE.</div><h1>FIND IT.<br><em>SING IT.</em></h1><p>Search popular tracks, open karaoke versions, and use your microphone for a live voice-level meter. No lyrics are stored or reproduced here.</p></div>
+ <div class="mic-card"><div class="mic-top"><span>MIC INPUT / LIVE</span><span id="micState">NOT CONNECTED</span></div><div class="mic-icon">♫</div><div><div class="meter"><i id="meterFill"></i></div><small id="micText">Enable your microphone to start sing mode.</small></div><div><button class="primary" id="micBtn">Enable microphone</button> <button id="stopBtn" disabled>Stop</button></div></div>
+</section>
+<div class="toolbar"><input id="search" class="search" placeholder="Search song or artist..." autocomplete="off"><button id="randomBtn">✦ Random song</button></div>
+<div class="filters" id="filters"><button class="chip active" data-filter="all">All tracks</button><button class="chip" data-filter="chart">Trending / charts</button><button class="chip" data-filter="pop">Pop</button><button class="chip" data-filter="rap">Rap / hip-hop</button><button class="chip" data-filter="classics">Classics</button></div>
+<div class="section-head"><h2 id="listTitle">Popular picks</h2><span id="count"></span></div>
+<div class="grid" id="songs"></div>
+<div class="note">
+<strong>Catalog note:</strong> This is a starter catalog, not literally every song ever released. The chart picks are a snapshot based on Germany chart listings checked on 5 Nov 2026. Use search to find other tracks; each Karaoke button opens a YouTube search for that song's karaoke/instrumental version. Availability depends on what the rights holders and uploaders provide.
+<br><br>Chart references: <a href="https://musicmetrics.net/countries/de/" target="_blank" rel="noopener">Germany daily music charts</a> · <a href="https://spotify-top.com/charts/de/daily" target="_blank" rel="noopener">Spotify Germany daily chart</a>.
+</div>
+</main>
+<footer>NOIR KARAOKE — SING LOUD. KEEP IT YOURS.</footer>
+<script>
+const tracks = [
+["Housewife","Tate McRae","chart pop"],["Für immer","AYLIVA","chart pop"],["Ain't In LA","ADÉLA","chart pop"],["Verschwommen","Ski Aggu, Ericson","chart rap"],["ARL LACAZETTE","ARL LACAZETTE","chart rap"],["Ehre wem Ehre gebührt","NGEE","chart rap"],["PROPAGANDA","Sido x Fler","chart rap"],["ASSALAMUALEIKUM","Samra x Capital Bra","chart rap"],["back to friends","sombr","chart pop"],["End of Beginning","Djo","chart pop"],["the cure","Olivia Rodrigo","chart pop"],["Love Me Not","Ravyn Lenae","chart pop"],["Patient Zero","Taylor Swift","chart pop"],["Lush Life","Zara Larsson","chart pop"],["WHERE IS MY HUSBAND!","RAYE","chart pop"],["stupid song","Olivia Rodrigo","chart pop"],["No Broke Boys","Disco Lines, Tinashe","chart pop"],["Die With A Smile","Lady Gaga, Bruno Mars","chart pop"],["Housewife","Tate McRae","chart pop"],["Iris","The Goo Goo Dolls","chart classics"],["In the End","Linkin Park","chart classics"],["Numb","Linkin Park","chart classics"],["Last Christmas","Wham!","chart classics"],["Billie Jean","Michael Jackson","chart classics"],["Another Love","Tom Odell","chart classics"],["Wonderwall","Oasis","chart classics"],["Paparazzi","Lady Gaga","chart pop"],["Mittelmeer","Pashanim","chart rap"],["Smells Like Teen Spirit","Nirvana","chart classics"],["Hips Don't Lie","Shakira ft. Wyclef Jean","chart classics"],
+["Blinding Lights","The Weeknd","pop"],["Flowers","Miley Cyrus","pop"],["Espresso","Sabrina Carpenter","pop"],["Birds of a Feather","Billie Eilish","pop"],["Cruel Summer","Taylor Swift","pop"],["Levitating","Dua Lipa","pop"],["As It Was","Harry Styles","pop"],["Shape of You","Ed Sheeran","pop"],["Someone You Loved","Lewis Capaldi","pop"],["Bad Romance","Lady Gaga","pop"],["Rolling in the Deep","Adele","pop"],["Stay","The Kid LAROI, Justin Bieber","pop"],["Watermelon Sugar","Harry Styles","pop"],["drivers license","Olivia Rodrigo","pop"],["Dance The Night","Dua Lipa","pop"],
+["Lose Yourself","Eminem","rap"],["God's Plan","Drake","rap"],["SICKO MODE","Travis Scott","rap"],["Sunflower","Post Malone, Swae Lee","rap"],["HUMBLE.","Kendrick Lamar","rap"],["Industry Baby","Lil Nas X, Jack Harlow","rap"],["Without Me","Eminem","rap"],["Starboy","The Weeknd, Daft Punk","rap"],
+["Take On Me","a-ha","classics"],["Africa","Toto","classics"],["Don't Stop Believin'","Journey","classics"],["Mr. Brightside","The Killers","classics"],["Sweet Caroline","Neil Diamond","classics"],["I Want It That Way","Backstreet Boys","classics"],["Hey Jude","The Beatles","classics"],["Every Breath You Take","The Police","classics"],["Wonderwall","Oasis","classics"],["Take Me to Church","Hozier","classics"]
+];
+const list=document.getElementById('songs'), search=document.getElementById('search');
+let filter='all';
+function render(){
+ const q=search.value.trim().toLowerCase();
+ const shown=tracks.filter(t=>(filter==='all'||t[2].split(' ').includes(filter))&&(!q||(t[0]+' '+t[1]).toLowerCase().includes(q)));
+ document.getElementById('count').textContent=shown.length+' TRACKS';
+ document.getElementById('listTitle').textContent=q?'Search results':filter==='chart'?'Trending / chart picks':'Popular picks';
+ list.innerHTML=shown.length?'':'<div class="empty">No matches. Try another title or artist.</div>';
+ shown.forEach((t,i)=>{
+  const el=document.createElement('article');el.className='song';
+  const n=document.createElement('span');n.className='num';n.textContent=String(i+1).padStart(2,'0');
+  const cover=document.createElement('div');cover.className='cover';cover.textContent='♫';
+  const meta=document.createElement('div');meta.className='meta';
+  const title=document.createElement('b');title.textContent=t[0];
+  const artist=document.createElement('small');artist.textContent=t[1];
+  meta.append(title,artist);
+  const btn=document.createElement('button');btn.className='primary';btn.textContent='KARAOKE ↗';
+  btn.addEventListener('click',()=>openKaraoke(t[0]+' '+t[1]));
+  el.append(n,cover,meta,btn);list.append(el);
+ });
+}
+function openKaraoke(q){window.open('https://www.youtube.com/results?search_query='+encodeURIComponent(q+' karaoke instrumental'), '_blank','noopener');}
+search.addEventListener('input',render);
+document.querySelectorAll('[data-filter]').forEach(b=>b.addEventListener('click',()=>{filter=b.dataset.filter;document.querySelectorAll('[data-filter]').forEach(x=>x.classList.toggle('active',x===b));render();}));
+document.getElementById('randomBtn').addEventListener('click',()=>{const t=tracks[Math.floor(Math.random()*tracks.length)];openKaraoke(t[0]+' '+t[1]);});
+render();
+let audioContext=null,stream=null,raf=null;
+const micBtn=document.getElementById('micBtn'),stopBtn=document.getElementById('stopBtn'),fill=document.getElementById('meterFill');
+async function startMic(){
+ try{
+  stream=await navigator.mediaDevices.getUserMedia({audio:true});
+  audioContext=new (window.AudioContext||window.webkitAudioContext)();
+  const source=audioContext.createMediaStreamSource(stream), analyser=audioContext.createAnalyser();
+  analyser.fftSize=256;source.connect(analyser);const data=new Uint8Array(analyser.frequencyBinCount);
+  document.getElementById('micState').textContent='LISTENING';document.getElementById('micText').textContent='Sing a line — the meter reacts to your voice.';
+  micBtn.disabled=true;stopBtn.disabled=false;
+  function tick(){analyser.getByteTimeDomainData(data);let sum=0;for(const v of data){const x=(v-128)/128;sum+=x*x;}const rms=Math.sqrt(sum/data.length);fill.style.width=Math.min(100,Math.round(rms*260))+'%';raf=requestAnimationFrame(tick);}
+  tick();
+ }catch(e){document.getElementById('micText').textContent='Microphone unavailable. Allow mic access in your browser settings and try again.';}
+}
+function stopMic(){if(raf)cancelAnimationFrame(raf);if(stream)stream.getTracks().forEach(t=>t.stop());if(audioContext)audioContext.close();stream=null;audioContext=null;fill.style.width='0%';micBtn.disabled=false;stopBtn.disabled=true;document.getElementById('micState').textContent='NOT CONNECTED';document.getElementById('micText').textContent='Microphone stopped.';}
+micBtn.addEventListener('click',startMic);stopBtn.addEventListener('click',stopMic);
+</script>
+</body>
+</html>
